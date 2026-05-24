@@ -42,10 +42,30 @@ class ShaderVertexInput:
     name: str
     type: BasicShaderType
 
+
+class ShaderVertexOutputMark(Enum):
+    NONE = 0
+    POSITION = 1
+    UV = 2
+    COLOR = 3
+    NORMAL = 4
+    TANGENT = 5
+    BITANGENT = 6
+
+SHADER_VERTEX_OUTPUT_MARK_STR_TO_ENUM = {
+    "POSITION": ShaderVertexOutputMark.POSITION,
+    "UV": ShaderVertexOutputMark.UV,
+    "COLOR": ShaderVertexOutputMark.COLOR,
+    "NORMAL": ShaderVertexOutputMark.NORMAL,
+    "TANGENT": ShaderVertexOutputMark.TANGENT,
+    "BITANGENT": ShaderVertexOutputMark.BITANGENT,
+}
+
 @dataclass
 class ShaderVertexOutput:
     name: str
     type: BasicShaderType
+    mark: ShaderVertexOutputMark
 
 @dataclass
 class ShaderStructure:

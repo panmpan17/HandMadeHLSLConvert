@@ -19,8 +19,7 @@ Shader "uv"
 
     vertexOutputs vert(uniforms u, vertexInputs v)
     {
-        vertexOutputs o
-        {
+        vertexOutputs o {
             position = mul(u.MVPMatrix, float4(v.position, 0.0, 1.0)),
             uv = v.uv
         };
