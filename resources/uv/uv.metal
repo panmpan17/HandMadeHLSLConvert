@@ -8,8 +8,8 @@ struct image_Uniforms
 
 struct image_VertexIn
 {
-    float3 position [[attribute(0)]];
-    float2 texCoord [[attribute(1)]];
+    metal::float3 position [[attribute(0)]];
+    metal::float2 texCoord [[attribute(1)]];
 };
 
 struct image_VertexOut

@@ -101,11 +101,11 @@ class HLSLParser:
                 field_name = parts[1].rstrip(";")
 
                 if self.current_bracket_level == BracketLevel.UNIFORM:
-                    self.shader_struct.uniform_fields.append(ShaderUniformField(field_name, shader_type))
+                    self.shader_struct.uniform_fields.append(ShaderUniformField(name=field_name, type=shader_type))
                 elif self.current_bracket_level == BracketLevel.VERTEX_INPUT:
-                    self.shader_struct.vertex_inputs.append(ShaderVertexInput(field_name, shader_type))
+                    self.shader_struct.vertex_inputs.append(ShaderVertexInput(name=field_name, type=shader_type))
                 elif self.current_bracket_level == BracketLevel.VERTEX_OUTPUT:
-                    self.shader_struct.vertex_outputs.append(ShaderVertexOutput(field_name, shader_type, ShaderVertexOutputMark.NONE))
+                    self.shader_struct.vertex_outputs.append(ShaderVertexOutput(name=field_name, type=shader_type, mark=ShaderVertexOutputMark.NONE))
                 
                 # TODO: Normal variable declaration?
         
@@ -132,7 +132,7 @@ class HLSLParser:
                 print(shader_type, field_name, mark)
                 
                 if self.current_bracket_level == BracketLevel.VERTEX_OUTPUT:
-                    self.shader_struct.vertex_outputs.append(ShaderVertexOutput(field_name, shader_type, mark))
+                    self.shader_struct.vertex_outputs.append(ShaderVertexOutput(name=field_name, type=shader_type, mark=mark))
                 else:
                     raise ParseError(f"Variable declaration with mark is only allowed in vertex output struct at line {index + 1}: {line}")
 
@@ -189,4 +189,6 @@ class HLSLParser:
 if __name__ == "__main__":
     parser = HLSLParser.read_file("resources/uv/uv.hlsl")
     parser.start_parsing()
-    print(parser.shader_struct)
+    result_json_str = parser.shader_struct.model_dump_json()
+    with open("output/uv_struct.txt", "w") as f:
+        f.write(result_json_str)

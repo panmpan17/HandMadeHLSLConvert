@@ -1,5 +1,7 @@
+import os
+
 from enum import Enum
-from dataclasses import dataclass, field
+from pydantic import BaseModel, Field
 
 
 class BasicShaderType(Enum):
@@ -30,15 +32,39 @@ class BasicShaderTypeDict:
         "float3x3": BasicShaderType.MAT3,
         "float4x4": BasicShaderType.MAT4,
     }
+    
+    TYPE_TO_METAL_NAME = {
+        BasicShaderType.INT: "int",
+        BasicShaderType.FLOAT: "float",
+        BasicShaderType.BOOL: "bool",
+        BasicShaderType.VEC2: "metal::float2",
+        BasicShaderType.VEC3: "metal::float3",
+        BasicShaderType.VEC4: "metal::float4",
+        BasicShaderType.MAT2: "metal::float2x2",
+        BasicShaderType.MAT3: "metal::float3x3",
+        BasicShaderType.MAT4: "metal::float4x4",
+    }
+    
+    TYPE_TO_GLSL_NAME = {
+        BasicShaderType.INT: "int",
+        BasicShaderType.FLOAT: "float",
+        BasicShaderType.BOOL: "bool",
+        BasicShaderType.VEC2: "vec2",
+        BasicShaderType.VEC3: "vec3",
+        BasicShaderType.VEC4: "vec4",
+        BasicShaderType.MAT2: "mat2",
+        BasicShaderType.MAT3: "mat3",
+        BasicShaderType.MAT4: "mat4",
+    }
 
 
-@dataclass
-class ShaderUniformField:
+# @dataclass
+class ShaderUniformField(BaseModel):
     name: str
     type: BasicShaderType
     
-@dataclass
-class ShaderVertexInput:
+# @dataclass
+class ShaderVertexInput(BaseModel):
     name: str
     type: BasicShaderType
 
@@ -61,15 +87,27 @@ SHADER_VERTEX_OUTPUT_MARK_STR_TO_ENUM = {
     "BITANGENT": ShaderVertexOutputMark.BITANGENT,
 }
 
-@dataclass
-class ShaderVertexOutput:
+# @dataclass
+class ShaderVertexOutput(BaseModel):
     name: str
     type: BasicShaderType
     mark: ShaderVertexOutputMark
 
-@dataclass
-class ShaderStructure:
+# @dataclass
+class ShaderStructure(BaseModel):
     name: str = ""
-    uniform_fields: list[ShaderUniformField] = field(default_factory=list) 
-    vertex_inputs: list[ShaderVertexInput] = field(default_factory=list) 
-    vertex_outputs: list[ShaderVertexOutput] = field(default_factory=list) 
+    uniform_fields: list[ShaderUniformField] = Field(default_factory=list) 
+    vertex_inputs: list[ShaderVertexInput] = Field(default_factory=list) 
+    vertex_outputs: list[ShaderVertexOutput] = Field(default_factory=list) 
+
+    @classmethod
+    def from_file(cls, file_path):
+        # json_data = '{"name": "Alice", "status": "active", "address": {"city": "Taipei", "zip_code": "114"}}'
+        if not os.path.isfile(file_path):
+            raise Exception(f"No such file '{file_path}'")
+        
+        with open(file_path) as f:
+            content = f.read()
+        
+        data = cls.model_validate_json(content)
+        return data
